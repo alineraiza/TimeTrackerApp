@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_track_app/common_widgets/show_alert_dialog.dart';
 import 'package:time_track_app/services/auth.dart';
 
 class HomePage extends StatelessWidget {
@@ -12,6 +13,20 @@ class HomePage extends StatelessWidget {
     print(e.toString());
     }
   }
+
+  Future<void> _confirmSignOut(BuildContext context) async {
+  final didRequestSignOut = await showAlertDialog(
+    context,
+    title: 'Logout', 
+    content: 'Are you sure that you want to logout?', 
+    cancelActionText: 'Cancel',
+    defaultActionText: 'Logout',
+  );
+  if (didRequestSignOut == true){
+    _signOut();
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +36,7 @@ class HomePage extends StatelessWidget {
           FlatButton(
             child: Text('Logout', style: TextStyle(fontSize: 18.0, color: Colors.white),
             ),
-            onPressed: _signOut,
+            onPressed: () => _confirmSignOut(context),
           ),
         ],
       ),

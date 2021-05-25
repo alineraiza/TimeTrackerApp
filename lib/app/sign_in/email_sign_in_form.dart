@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_track_app/app/sign_in/validators.dart';
 import 'package:time_track_app/common_widgets/form_submit_button.dart';
+import 'package:time_track_app/common_widgets/show_alert_dialog.dart';
 import 'package:time_track_app/services/auth.dart';
 
 enum EmailSignInFormType{signIn, register}
@@ -25,13 +26,11 @@ class _EmailSignInformState extends State<EmailSignInForm> {
   bool _isLoading = false;
   
   void _submit() async{
-    print('submit called');
     setState(() {
       _submitted = true;
       _isLoading = true;
     });
     try {
-      await Future.delayed(Duration(seconds:3));
       if(_formType == EmailSignInFormType.signIn){
         await widget.auth.signInWithEmailAndPassword(_email, _password);
       } else {
@@ -39,7 +38,12 @@ class _EmailSignInformState extends State<EmailSignInForm> {
       }
       Navigator.of(context).pop();
     } catch (e) {
-      print(e.toString());
+      showAlertDialog(
+        context,
+        title: 'Sign in failed',
+        content: e.toString(),
+        defaultActionText: 'ok',
+      );
     } finally{
       setState(() {
         _isLoading = false;
