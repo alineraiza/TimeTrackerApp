@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_track_app/app/sign_in/validators.dart';
 import 'package:time_track_app/common_widgets/form_submit_button.dart';
-import 'package:time_track_app/common_widgets/show_alert_dialog.dart';
+import 'package:time_track_app/common_widgets/show_exception_alert_dialog.dart';
 import 'package:time_track_app/services/auth.dart';
 
 
@@ -18,6 +19,9 @@ class EmailSignInForm extends StatefulWidget with EmailAndPasswordValidators{
 class _EmailSignInformState extends State<EmailSignInForm> {  
   final TextEditingController _emailControler = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passWordFocusNode = FocusNode();
+
   
   String get _email => _emailControler.text;
   String get _password => _passwordController.text;
@@ -25,6 +29,13 @@ class _EmailSignInformState extends State<EmailSignInForm> {
   bool _submitted = false;
   bool _isLoading = false;
   
+  void dispose(){
+    _emailControler.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passWordFocusNode.dispose();
+    super.dispose();
+  }
   void _submit() async{
     setState(() {
       _submitted = true;
@@ -38,12 +49,11 @@ class _EmailSignInformState extends State<EmailSignInForm> {
         await auth.createUserWithEmailAndPassword(_email, _password);
       }
       Navigator.of(context).pop();
-    } catch (e) {
-      showAlertDialog(
+    } on FirebaseAuthException catch (e) {
+      showExceptionAlertDialog(
         context,
         title: 'Sign in failed',
-        content: e.toString(),
-        defaultActionText: 'ok',
+        exception: e,
       );
     } finally{
       setState(() {
